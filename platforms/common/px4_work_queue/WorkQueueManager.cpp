@@ -245,6 +245,7 @@ WorkQueueManagerRun(int, char **)
 				PX4_ERR("getting sched param for %s failed (%i)", wq->name, ret_getschedparam);
 			}
 
+#if defined(ENABLE_LOCKSTEP_SCHEDULER)
 #ifndef __PX4_DARWIN
 			int ret_set_thread_scope = pthread_attr_setscope(&attr, PTHREAD_SCOPE_PROCESS);
 
@@ -252,6 +253,7 @@ WorkQueueManagerRun(int, char **)
 				PX4_ERR("setting process scheduling scope for %s failed (%i)", wq->name, ret_set_thread_scope);
 			}
 
+#endif
 #endif
 
 			// stack size

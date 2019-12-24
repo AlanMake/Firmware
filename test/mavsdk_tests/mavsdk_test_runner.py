@@ -243,12 +243,6 @@ def main():
 
                 returncode = test_runner.wait(group['timeout_min'])
                 was_success = (returncode == 0)
-                print("Test '{}': {}".
-                    format(test, "Success" if was_success else "Fail"))
-                if not was_success:
-                    overall_success = False
-                    if args.fail_early:
-                        break
 
                 if args.gui:
                     returncode = gzclient_runner.stop()
@@ -259,6 +253,13 @@ def main():
 
                 px4_runner.stop()
                 print("px4 exited with {}".format(returncode))
+
+                print("Test '{}': {}".
+                    format(test, "Success" if was_success else "Fail"))
+                if not was_success:
+                    overall_success = False
+                    if args.fail_early:
+                        break
 
         if not overall_success and x > 0:
             print("Aborting with a failure in test run %d" % (x + 1))

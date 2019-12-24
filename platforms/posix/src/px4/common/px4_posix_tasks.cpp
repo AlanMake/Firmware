@@ -180,6 +180,17 @@ px4_task_t px4_task_spawn_cmd(const char *name, int scheduler, int priority, int
 
 #ifndef __PX4_DARWIN
 
+#if defined(ENABLE_LOCKSTEP_SCHEDULER)
+	rv = pthread_attr_setscope(&attr, PTHREAD_SCOPE_PROCESS);
+
+	if (rv != 0) {
+		PX4_ERR("px4_task_spawn_cmd: failed to set thread process scope");
+		free(taskdata);
+		return (rv < 0) ? rv : -rv;
+	}
+
+#endif
+
 	if (stack_size < PTHREAD_STACK_MIN) {
 		stack_size = PTHREAD_STACK_MIN;
 	}
@@ -204,7 +215,11 @@ px4_task_t px4_task_spawn_cmd(const char *name, int scheduler, int priority, int
 		return (rv < 0) ? rv : -rv;
 	}
 
+#if defined(ENABLE_LOCKSTEP_SCHEDULER)
+	rv = pthread_attr_setschedpolicy(&attr, SCHED_RR);
+#else
 	rv = pthread_attr_setschedpolicy(&attr, scheduler);
+#endif
 
 	if (rv != 0) {
 		PX4_ERR("px4_task_spawn_cmd: failed to set sched policy");

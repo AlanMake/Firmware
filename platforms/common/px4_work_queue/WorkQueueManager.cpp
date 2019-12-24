@@ -245,6 +245,15 @@ WorkQueueManagerRun(int, char **)
 				PX4_ERR("getting sched param for %s failed (%i)", wq->name, ret_getschedparam);
 			}
 
+#ifndef __PX4_DARWIN
+			int ret_set_thread_scope = pthread_attr_setscope(&attr, PTHREAD_SCOPE_PROCESS);
+
+			if (ret_set_thread_scope != 0) {
+				PX4_ERR("setting process scheduling scope for %s failed (%i)", wq->name, ret_set_thread_scope);
+			}
+
+#endif
+
 			// stack size
 #if defined(__PX4_QURT)
 			const size_t stacksize = math::max(8 * 1024, PX4_STACK_ADJUSTED(wq->stacksize));
@@ -265,7 +274,12 @@ WorkQueueManagerRun(int, char **)
 
 #ifndef __PX4_QURT
 			// schedule policy FIFO
+
+#if defined(ENABLE_LOCKSTEP_SCHEDULER)
+			int ret_setschedpolicy = pthread_attr_setschedpolicy(&attr, SCHED_RR);
+#else
 			int ret_setschedpolicy = pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+#endif
 
 			if (ret_setschedpolicy != 0) {
 				PX4_ERR("failed to set sched policy SCHED_FIFO (%i)", ret_setschedpolicy);

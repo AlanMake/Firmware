@@ -141,10 +141,6 @@ else
 
 endif
 
-ifdef PX4_MAVSDK_TESTING
-	CMAKE_ARGS += -DMAVSDK_TESTING=ON
-endif
-
 # Functions
 # --------------------------------------------------------------------
 # describe how to build a cmake config
@@ -361,7 +357,7 @@ tests_coverage:
 rostest: px4_sitl_default
 	@$(MAKE) --no-print-directory px4_sitl_default sitl_gazebo
 
-tests_integration: px4_sitl_default sitl_gazebo mavsdk_tests
+tests_integration: px4_sitl gazebo mavsdk_tests
 	@"$(SRC_DIR)"/test/mavsdk_tests/mavsdk_test_runner.py --speed-factor 100
 
 tests_mission: rostest

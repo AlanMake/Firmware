@@ -358,6 +358,7 @@ rostest: px4_sitl_default
 	@$(MAKE) --no-print-directory px4_sitl_default sitl_gazebo
 
 tests_integration: px4_sitl gazebo mavsdk_tests
+# Missing step: Gazebo model generation
 	@"$(SRC_DIR)"/test/mavsdk_tests/mavsdk_test_runner.py --speed-factor 100
 
 tests_mission: rostest
